@@ -4,7 +4,7 @@ class ReadDelegate(btle.DefaultDelegate):
     def handleNotification(self, cHandle, data):
         print(data.decode("utf-8"))
  
-p = btle.Peripheral("9C:1D:58:8A:A5:87")
+p = btle.Peripheral("20:14:04:16:39:44")
 p.withDelegate(ReadDelegate())
  
 while True:
