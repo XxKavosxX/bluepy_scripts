@@ -1,46 +1,40 @@
-import time, bluetooth as bt
-from bluetooth import *
+import time, datetime, bluetooth as bt
+from bluetooth import BluetoothSocket
+import csv
+DEBUG=0
 
-ack_devices = ["20:14:04:16:39:44", "48:49:C7:EF:AC:76"]
 print("Search nearby devices...")
 # Search devices
 nearby_devices = bt.discover_devices(lookup_names=True)
-print( "Found {} devices.".format(len(nearby_devices)))
+print( "found {} devices.".format(len(nearby_devices)))
 
 for addr, name in nearby_devices:
-    print( "ADDR {}, NAME {}".format(addr, name))
+     print("addr {} name {}".format(addr,name))
 
+# list of tuples nearby_devices = [("a","b")("c","d")]
+# convert to dict with key:value -> name:addr
+nearby_devices = dict((name,addr) for addr,name in nearby_devices)
+
+if DEBUG: print(nearby_devices)
 # Create the client socket
-client_socket = BluetoothSocket(RFCOMM)
+btsocket = BluetoothSocket(bt.RFCOMM)
 
-print("Create connection...");
-# Try to connect
 try:
-    print(" Try connect to MAC ",ack_devices[0])
-    client_socket.connect((ack_devices[0], 1))
+    hc05 = nearby_devices.get("\r\n")
+    print(" Try connect to MAC ",hc05)
+    btsocket.connect((hc05, 1))
     pass
 except bt.btcommon.BluetoothError as error:
     print(" BluetoothError:", error)
-    client_socket.close()
+    btsocket.close()
     pass
-
 print(" connected!");
 
 while(1):
-    time.sleep(1)
-    msg=client_socket.recv(1024)
-    print(msg.decode('utf-8'))
-    print("\n")
-   # try:
-   #    print("Recv message");
-   #    msg = client_socket.recv(1024);
-       #msg = bytes(msg, 'utf-8')
-       #print(msg)
-   #    print("Received [%s]" %msg)
-   #    pass 
-   # except bt.btcommon.BluetoothError as error:
-   #    print("Erro when listen")
-   #    pass
+    msg = btsocket.recv(1024)
+    msg += btsocket.recv(1024)
+    with open('RAW_datalog.txt', 'a') as csvfile:
+       writer = csvfile.write(msg.decode('utf-8'))
+    print(msg)
 
-#print("Finished")
 client_socket.close()
