@@ -53,5 +53,4 @@ while(1):
          if b'E' in msg:
             msg = msg.strip(b'E')
             end=True
-         writer = csvfile.write(msg.decode('utf-8'))
-    
+         writer = csvfile.write(msg.decode('utf-8')) 
