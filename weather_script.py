@@ -1,3 +1,4 @@
+
 import time, datetime, bluetooth as bt
 from bluetooth import BluetoothSocket
 import csv
@@ -16,6 +17,7 @@ for addr, name in nearby_devices:
 nearby_devices = dict((name,addr) for addr,name in nearby_devices)
 
 if DEBUG: print(nearby_devices)
+
 # Create the client socket
 btsocket = BluetoothSocket(bt.RFCOMM)
 
@@ -31,10 +33,25 @@ except bt.btcommon.BluetoothError as error:
 print(" connected!");
 
 while(1):
-    msg = btsocket.recv(1024)
-    msg += btsocket.recv(1024)
-    with open('RAW_datalog.txt', 'a') as csvfile:
-       writer = csvfile.write(msg.decode('utf-8'))
-    print(msg)
+    # Request data every 5 seconds
+    time.sleep(10)
+    # Open file in mode 'a' append data
+    now = datetime.datetime.now()
 
-client_socket.close()
+    filename=now.strftime("%d-%m-%y")+"_log.txt"
+
+    csvfile = open(filename, 'a')
+
+    print("Resquesting log")
+    # Send Listening flag 'L'
+    btsocket.send("L")
+    end=False;
+    while(not end):
+   #Receive data
+         msg = btsocket.recv(1024)
+         # Check if is End flag 'E'
+         if b'E' in msg:
+            msg = msg.strip(b'E')
+            end=True
+         writer = csvfile.write(msg.decode('utf-8'))
+    
