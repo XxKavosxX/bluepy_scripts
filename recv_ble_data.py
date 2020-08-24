@@ -13,8 +13,8 @@ class ReadDelegate(btle.DefaultDelegate):
         #Is file exist, open it, create if not
         filename = now.strftime("%m-%y")+"_log.txt"
 
-        #Open file in append+binary mode
-        file = open(filename, 'ab')
+        #Open file in append mode
+        file = open(filename, 'a')
 
         #Decide data
         decoded = data.decode('utf-8')
@@ -22,7 +22,7 @@ class ReadDelegate(btle.DefaultDelegate):
         #Write data with format a0,b0,...z0;a1,b1,..,z1;a2,b2,..,z2
         writer = file.write(decoded+';')
 
-BLELADDR = "D4:36:39:67:7F:2A"
+BLELADDR = str("D4:36:39:67:7F:2A")
 p = btle.Peripheral(BLELADDR)
 p.withDelegate(ReadDelegate())
 
